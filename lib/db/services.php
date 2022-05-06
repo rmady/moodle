@@ -119,6 +119,13 @@ $functions = array(
         'ajax'          => true,
         'loginrequired' => true,
     ),
+    'core_badges_get_external_badges' => array(
+        'classname'     => 'core_badges\external\get_external_badges',
+        'methodname'    => 'execute',
+        'description'   => 'Returns the list of external badges awarded to a user.',
+        'type'          => 'read',
+        'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
+    ),
     'core_badges_get_user_badges' => array(
         'classname'     => 'core_badges_external',
         'methodname'    => 'get_user_badges',

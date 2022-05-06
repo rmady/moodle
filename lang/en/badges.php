@@ -286,6 +286,7 @@ $string['enablebadges'] = 'Enable badges';
 $string['endorsement'] = 'Endorsement';
 $string['error:backpackdatainvalid'] = 'The data return from the backpack was invalid.';
 $string['error:backpackemailnotfound'] = 'The email \'{$a}\' is not associated with a backpack. You need to <a href="http://backpack.openbadges.org">create a backpack</a> for that account or sign in with another email address.';
+$string['error:backpackisnotconnected'] = 'The user backpack is not connected.';
 $string['error:badgeawardnotfound'] = 'Cannot verify this awarded badge.  This badge may have been revoked.';
 $string['error:badgenotfound'] = 'Badge not found';
 $string['error:cannotact'] = 'Cannot activate the badge. ';
@@ -323,6 +324,7 @@ $string['error:requesttimeout'] = 'The connection request timed out before it co
 $string['error:requesterror'] = 'The connection request failed (error code {$a}).';
 $string['error:relatedbadgedoesntexist'] = 'There is no public badge with this identifier';
 $string['error:save'] = 'Cannot save the badge.';
+$string['error:sitebackpackisnotconnected'] = 'The site backpack is not connected.';
 $string['error:userdeleted'] = '{$a->user} (This user no longer exists in {$a->site})';
 $string['eventbadgearchived'] = 'Badge archived';
 $string['eventbadgeawarded'] = 'Badge awarded';
@@ -351,6 +353,7 @@ $string['expireperiods'] = 'This badge expires {$a} second(s) after being issued
 $string['expirydate'] = 'Expiry date';
 $string['expirydate_help'] = 'Optionally, badges can expire on a specific date, or the date can be calculated based on the date when the badge was issued to a user. ';
 $string['existsinbackpack'] = 'Badge already exists in backpack';
+$string['externalbackpackdisabled'] = 'External badges are not enabled on this site.';
 $string['externalconnectto'] = 'To display external badges you need to <a href="{$a}">connect to a backpack</a>.';
 $string['externalbadges'] = 'My badges from other web sites';
 $string['externalbadgesp'] = 'Badges from other web sites:';
