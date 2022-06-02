@@ -127,6 +127,14 @@ $functions = array(
         'capabilities'  => 'moodle/badges:viewotherbadges',
         'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
     ),
+    'core_badges_get_user_badge_by_hash' => array(
+        'classname'     => 'core_badges\external\get_user_badge_by_hash',
+        'methodname'    => 'execute',
+        'description'   => 'Returns the badge awarded to a user by hash.',
+        'type'          => 'read',
+        'capabilities'  => 'moodle/badges:configuredetails',
+        'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
+    ),
     'core_blog_get_entries' => array(
         'classname'   => 'core_blog\external',
         'methodname'  => 'get_entries',
