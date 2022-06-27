@@ -1285,8 +1285,10 @@ class externallib_test extends externallib_advanced_testcase {
 
         $studentroleid = $DB->get_field('role', 'id', ['shortname' => 'student'], MUST_EXIST);
         $teacherroleid = $DB->get_field('role', 'id', ['shortname' => 'editingteacher'], MUST_EXIST);
-        $course = $datagen->create_course();
-        $user = $datagen->create_user();
+        $course  = $datagen->create_course();
+        // Create users.
+        $user1   = $datagen->create_user();
+        $user2   = $datagen->create_user();
         $teacher = $datagen->create_user();
 
         $instanceid = null;
@@ -1306,32 +1308,61 @@ class externallib_test extends externallib_advanced_testcase {
         $this->assertNotNull($instanceid);
 
         $instance = $DB->get_record('enrol', ['id' => $instanceid], '*', MUST_EXIST);
-        $manualplugin->enrol_user($instance, $user->id, $studentroleid, 0, 0, ENROL_USER_ACTIVE);
+        $manualplugin->enrol_user($instance, $user1->id, $studentroleid, 0, 0, ENROL_USER_ACTIVE);
+        $manualplugin->enrol_user($instance, $user2->id, $studentroleid, 0, 0, ENROL_USER_ACTIVE);
         $manualplugin->enrol_user($instance, $teacher->id, $teacherroleid, 0, 0, ENROL_USER_ACTIVE);
-        $ueid = (int)$DB->get_field(
+        $ue1id = (int)$DB->get_field(
             'user_enrolments',
             'id',
-            ['enrolid' => $instance->id, 'userid' => $user->id],
+            ['enrolid' => $instance->id, 'userid' => $user1->id],
+            MUST_EXIST
+        );
+        $ue2id = (int)$DB->get_field(
+            'user_enrolments',
+            'id',
+            ['enrolid' => $instance->id, 'userid' => $user2->id],
             MUST_EXIST
         );
 
+        // Login as user1.
+        $this->setUser($user1);
+
+        // Valid data without unenrol self capability.
+        $data = core_enrol_external::unenrol_user_enrolment($ue1id);
+        $data = external_api::clean_returnvalue(core_enrol_external::unenrol_user_enrolment_returns(), $data);
+        $this->assertFalse($data['result']);
+
+        // Valid data without unenrol capability.
+        $data = core_enrol_external::unenrol_user_enrolment($ue2id);
+        $data = external_api::clean_returnvalue(core_enrol_external::unenrol_user_enrolment_returns(), $data);
+        $this->assertFalse($data['result']);
+
+        // Valid data with unenrol self capability.
+        $context = \context_course::instance($course->id);
+        assign_capability('enrol/manual:unenrolself', CAP_ALLOW, $studentroleid, $context, true);
+        $data = core_enrol_external::unenrol_user_enrolment($ue1id);
+        $data = external_api::clean_returnvalue(core_enrol_external::unenrol_user_enrolment_returns(), $data);
+        $this->assertTrue($data['result']);
+        $this->assertEmpty($data['errors']);
+
         // Login as teacher.
         $this->setUser($teacher);
-
         // Invalid data by passing invalid ueid.
         $data = core_enrol_external::unenrol_user_enrolment(101010);
         $data = external_api::clean_returnvalue(core_enrol_external::unenrol_user_enrolment_returns(), $data);
         $this->assertFalse($data['result']);
         $this->assertNotEmpty($data['errors']);
 
-        // Valid data.
-        $data = core_enrol_external::unenrol_user_enrolment($ueid);
+        // Valid data with unenrol capability.
+        $data = core_enrol_external::unenrol_user_enrolment($ue2id);
         $data = external_api::clean_returnvalue(core_enrol_external::unenrol_user_enrolment_returns(), $data);
         $this->assertTrue($data['result']);
         $this->assertEmpty($data['errors']);
 
-        // Check unenrol user enrolment.
-        $ue = $DB->count_records('user_enrolments', ['id' => $ueid]);
+        // Check unenrol another user enrolment.
+        $ue = $DB->count_records('user_enrolments', ['id' => $ue1id]);
+        $this->assertEquals(0, $ue);
+        $ue = $DB->count_records('user_enrolments', ['id' => $ue2id]);
         $this->assertEquals(0, $ue);
     }
 

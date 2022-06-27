@@ -17,6 +17,7 @@ information provided here is intended especially for developers.
   Please use enrol_plugin::get_welcome_message_contact() instead.
 * enrol_self_plugin::email_welcome_message() has been deprecated.
   Please use enrol_plugin::send_course_welcome_message_to_user() instead.
+* External function core_enrol_unenrol_user_enrolment now self unenrol from a course.
 
 === 4.3 ===
 

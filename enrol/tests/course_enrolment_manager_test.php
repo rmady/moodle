@@ -644,4 +644,44 @@ class course_enrolment_manager_test extends \advanced_testcase {
         ], array_column($forumusers['users'], 'username'));
         $this->assertEquals(7, $forumusers['totalusers']);
     }
+
+    /**
+     * Tests for unenrol_user method.
+     * 
+     */
+    public function test_unenrol_self_and_another_user(): void {
+        global $DB, $PAGE;
+
+        $this->resetAfterTest(true);
+
+        $context = context_course::instance($this->course->id);
+        $student = $DB->get_record('role', ['shortname' => 'student']);
+        $this->getDataGenerator()->enrol_user($this->users['user0']->id, $this->course->id, $student->id);
+        $this->getDataGenerator()->enrol_user($this->users['user1']->id, $this->course->id, $student->id);
+        $enrolment1 = $DB->get_record('user_enrolments', ['userid' => $this->users['user0']->id]);
+        $enrolment2 = $DB->get_record('user_enrolments', ['userid' => $this->users['user1']->id]);
+
+        self::setUser($this->users['user0']);
+        $manager = new course_enrolment_manager($PAGE, $this->course);
+
+        // Try to unenrol self and another user without capabilities.
+        $this->assertFalse($manager->unenrol_user($enrolment1, $this->users['user0']->id));
+        $this->assertTrue(is_enrolled($context, $this->users['user0']->id));
+
+        // Test unenrol another user.
+        $this->assertFalse($manager->unenrol_user($enrolment2, $this->users['user1']->id));
+        $this->assertTrue(is_enrolled($context, $this->users['user1']->id));
+
+        // Assing capabilities to unenrol self and another user.
+        assign_capability('enrol/manual:unenrolself', CAP_ALLOW, $student->id, $context->id, true);
+        assign_capability('enrol/manual:unenrol', CAP_ALLOW, $student->id, $context->id, true);
+
+        // Test unenrol another user.
+        $manager->unenrol_user($enrolment2, $this->users['user1']->id);
+        $this->assertFalse(is_enrolled($context, $this->users['user1']->id));
+
+        // Test unenrol self.
+        $manager->unenrol_user($enrolment1, $this->users['user0']->id);
+        $this->assertFalse(is_enrolled($context, $this->users['user0']->id));
+    }
 }

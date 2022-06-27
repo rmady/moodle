@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 use core_external\external_api;
 use core_external\external_files;
 use core_external\external_format_value;
@@ -1140,7 +1142,7 @@ class core_enrol_external extends external_api {
      * @return array An array consisting of the processing result, errors.
      */
     public static function unenrol_user_enrolment($ueid) {
-        global $CFG, $DB, $PAGE;
+        global $CFG, $DB, $PAGE, $USER;
 
         $params = self::validate_parameters(self::unenrol_user_enrolment_parameters(), [
             'ueid' => $ueid
@@ -1162,12 +1164,15 @@ class core_enrol_external extends external_api {
             $validationerrors['invalidrequest'] = get_string('invalidrequest', 'enrol');
         }
 
-        // If the userenrolment exists, unenrol the user.
-        if (!isset($validationerrors)) {
+        // If the user enrolment exists, unenrol the user.
+        if (!isset($validationerrors) && !empty($userid)) {
             require_once($CFG->dirroot . '/enrol/locallib.php');
-            $manager = new course_enrolment_manager($PAGE, $course);
-            $result = $manager->unenrol_user($userenrolment);
-        } else {
+            $manager     = new course_enrolment_manager($PAGE, $course);
+            $selfunenrol = ($USER->id === $userid);
+            $result      = $manager->unenrol_user($userenrolment, $selfunenrol);
+        }
+
+        if (!empty($validationerrors)) {
             foreach ($validationerrors as $key => $errormessage) {
                 $errors[] = (object)[
                     'key' => $key,

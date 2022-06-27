@@ -844,6 +844,8 @@ $functions = array(
         'description' => 'External function that unenrols a given user enrolment',
         'type' => 'write',
         'ajax' => true,
+        'capabilities' => 'enrol/$enrol:unenrol, enrol/$enrol:unenrolself',
+        'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
     ),
     'core_fetch_notifications' => array(
         'classname' => 'core_external',

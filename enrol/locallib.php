@@ -786,16 +786,19 @@ class course_enrolment_manager {
     }
 
     /**
-     * Unenrols a user from the course given the users ue entry
+     * Unenrols a user from the course given the users ue entry.
+     * Check the capability when selfunenrol is true and the users ids are the same.
      *
-     * @global moodle_database $DB
      * @param stdClass $ue
+     * @param bool $selfunenrol
      * @return bool
      */
-    public function unenrol_user($ue) {
-        global $DB;
+    public function unenrol_user(stdClass $ue, bool $selfunenrol = false): bool {
+        global $USER;
         list ($instance, $plugin) = $this->get_user_enrolment_components($ue);
-        if ($instance && $plugin && $plugin->allow_unenrol_user($instance, $ue) && has_capability("enrol/$instance->enrol:unenrol", $this->context)) {
+        $capability = $selfunenrol && ($USER->id === $ue->userid) ?
+            "enrol/$instance->enrol:unenrolself" : "enrol/$instance->enrol:unenrol";
+        if ($instance && $plugin && $plugin->allow_unenrol_user($instance, $ue) && has_capability($capability, $this->context)) {
             $plugin->unenrol_user($instance, $ue->userid);
             return true;
         }
