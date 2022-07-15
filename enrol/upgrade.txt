@@ -4,6 +4,10 @@ information provided here is intended especially for developers.
 === 4.1.1 ===
 
 * New is_self_enrol_available() function has been created. Similar to can_self_enrol but without checking user capabilities.
+=== 4.1 ===
+
+* External function core_enrol_external::get_users_courses now returns a field called "courseimage" containing a URL pointing to
+  the course image.
 
 === 4.0 ===
 
