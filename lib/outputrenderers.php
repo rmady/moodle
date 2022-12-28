@@ -1674,10 +1674,10 @@ class core_renderer extends renderer_base {
     /**
      * Get the course pattern image URL.
      *
-     * @param stdClass $context course context object
+     * @param context_course $context course context object
      * @return string URL of the course pattern image in SVG format
      */
-    public function get_generated_url_for_course(stdClass $context) : string {
+    public function get_generated_url_for_course(context_course $context): string {
         return moodle_url::make_pluginfile_url($context->id, 'course', 'generated', null, '/', 'course.svg')->out();
     }
 
@@ -1687,7 +1687,7 @@ class core_renderer extends renderer_base {
      * @param int $id id to use when generating the pattern
      * @return string SVG file contents
      */
-    public function get_generated_svg_for_id(int $id) : string {
+    public function get_generated_svg_for_id(int $id): string {
         $color = $this->get_generated_color_for_id($id);
         $pattern = new \core_geopattern();
         $pattern->setColor($color);

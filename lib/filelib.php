@@ -4918,9 +4918,9 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null, $offlin
             $svg = $OUTPUT->get_generated_svg_for_id($course->id);
 
             \core\session\manager::write_close(); // Unlock session during file serving.
-            send_file($svg, 'course.svg', 60*60, 0, true, $forcedownload);
+            send_file($svg, 'course.svg', 60 * 60, 0, true, $forcedownload);
 
-        }else {
+        } else {
             send_file_not_found();
         }
 

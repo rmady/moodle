@@ -472,7 +472,7 @@ class core_enrol_external extends external_api {
                     'summary'   => new external_value(PARAM_RAW, 'summary', VALUE_OPTIONAL),
                     'summaryformat' => new external_format_value('summary', VALUE_OPTIONAL),
                     'format'    => new external_value(PARAM_PLUGIN, 'course format: weeks, topics, social, site', VALUE_OPTIONAL),
-                    'courseimage'   => new external_value(PARAM_URL, 'The course image URL.', VALUE_OPTIONAL),
+                    'courseimage'   => new external_value(PARAM_URL, 'The course image URL', VALUE_OPTIONAL),
                     'showgrades' => new external_value(PARAM_BOOL, 'true if grades are shown, otherwise false', VALUE_OPTIONAL),
                     'lang'      => new external_value(PARAM_LANG, 'forced course language', VALUE_OPTIONAL),
                     'enablecompletion' => new external_value(PARAM_BOOL, 'true if completion is enabled, otherwise false',

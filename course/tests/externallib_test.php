@@ -2706,15 +2706,21 @@ class externallib_test extends externallib_advanced_testcase {
         $draftid = file_get_unused_draft_itemid();
         $filerecord = [
             'component' => 'user',
-            'filearea' => 'draft',
+            'filearea'  => 'draft',
             'contextid' => context_user::instance($USER->id)->id,
-            'itemid' => $draftid,
-            'filename' => 'image.jpg',
-            'filepath' => '/',
+            'itemid'    => $draftid,
+            'filename'  => 'image.jpg',
+            'filepath'  => '/',
         ];
         $fs = get_file_storage();
         $fs->create_file_from_string($filerecord, file_get_contents(__DIR__ . '/fixtures/image.jpg'));
-        $course2 = self::getDataGenerator()->create_course(array('visible' => 0, 'category' => $category2->id, 'idnumber' => 'i2', 'customfields' => [$customfieldvalue], 'overviewfiles_filemanager' => $draftid));
+        $course2 = self::getDataGenerator()->create_course([
+            'visible'      => 0,
+            'category'     => $category2->id,
+            'idnumber'     => 'i2',
+            'customfields' => [$customfieldvalue],
+            'overviewfiles_filemanager' => $draftid
+        ]);
 
         $student1 = self::getDataGenerator()->create_user();
         $user1 = self::getDataGenerator()->create_user();
@@ -3884,5 +3890,28 @@ class externallib_test extends externallib_advanced_testcase {
         $result = core_course_external::toggle_activity_recommendation($areaname, $areaid);
         $this->assertFalse($favouritefactory->favourite_exists($component, $areaname, $areaid, $context));
         $this->assertFalse($result['status']);
+    }
+
+    /**
+     * Test generated url from course image.
+     * @covers ::get_generated_url_for_course
+     */
+    public function test_get_generated_url_for_course_image() {
+        global $OUTPUT;
+
+        $this->resetAfterTest();
+
+        $course  = self::getDataGenerator()->create_course();
+        $context = context_course::instance($course->id, IGNORE_MISSING);
+
+        // Get the image with correct course context.
+        $courseimage = $OUTPUT->get_generated_url_for_course($context);
+        $url         = "https://www.example.com/moodle/pluginfile.php/{$context->id}/course/generated/course.svg";
+        $this->assertEquals($url, $courseimage);
+
+        // Get the image with wrong system context.
+        $context = context_system::instance();
+        $this->expectException('TypeError');
+        $courseimage  = $OUTPUT->get_generated_url_for_course($context);
     }
 }
