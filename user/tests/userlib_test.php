@@ -913,9 +913,9 @@ class userlib_test extends \advanced_testcase {
         self::assertSame('0', $got['mailformat']);
     }
 
-
     /**
      * Test user_get_user_details_permissions
+     * @covers ::user_get_user_details
      */
     public function test_user_get_user_details_permissions() {
         global $CFG;
@@ -988,17 +988,15 @@ class userlib_test extends \advanced_testcase {
 
     /**
      * Test user_get_user_details_groups
+     * @covers ::user_get_user_details
      */
     public function test_user_get_user_details_groups() {
-        global $CFG;
-
         $this->resetAfterTest();
 
         // Create user and modify user profile.
         $teacher = $this->getDataGenerator()->create_user();
         $student1 = $this->getDataGenerator()->create_user(['idnumber' => 'user1id', 'city' => 'Barcelona', 'address' => 'BCN 1B']);
         $student2 = $this->getDataGenerator()->create_user();
-        $student1fullname = fullname($student1);
 
         $course = $this->getDataGenerator()->create_course();
         $coursecontext = \context_course::instance($course->id);
