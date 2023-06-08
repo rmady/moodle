@@ -736,9 +736,17 @@ class mod_scorm_external extends external_api {
             }
         }
 
-        $result = array();
-        $result['scorms'] = $returnedscorms;
-        $result['warnings'] = $warnings;
+        $settings = [
+            [
+                'name' => 'scormstandard',
+                'value' => get_config('scorm', 'scormstandard'),
+            ]
+        ];
+        $result = [
+            'scorms' => $returnedscorms,
+            'globalsettings' => $settings,
+            'warnings' => $warnings
+        ];
         return $result;
     }
 
@@ -806,6 +814,14 @@ class mod_scorm_external extends external_api {
                             'timemodified' => new external_value(PARAM_INT, 'Time of last modification', VALUE_OPTIONAL),
                         ]
                     ), 'SCORM')
+                ),
+                'globalsettings' => new external_multiple_structure(
+                    new external_single_structure(
+                        [
+                            'name' => new external_value(PARAM_RAW, 'Setting name'),
+                            'value' => new external_value(PARAM_RAW, 'Setting value')
+                        ]
+                    ), 'Global SCORM settings', VALUE_OPTIONAL
                 ),
                 'warnings' => new external_warnings(),
             )
