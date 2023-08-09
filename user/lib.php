@@ -362,7 +362,7 @@ function user_get_user_details($user, $course = null, array $userfields = array(
                 if ($formfield->is_visible() and !$formfield->is_empty()) {
 
                     $userdetails['customfields'][] = [
-                        'name' => $formfield->field->name,
+                        'name' => $formfield->display_name(),
                         'value' => $formfield->data,
                         'displayvalue' => $formfield->display_data(),
                         'type' => $formfield->field->datatype,
