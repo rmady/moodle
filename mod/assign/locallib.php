@@ -344,7 +344,7 @@ class assign {
      *
      * @return array The array of error messages
      */
-    protected function get_error_messages(): array {
+    public function get_error_messages(): array {
         return $this->errors;
     }
 
@@ -8185,8 +8185,7 @@ class assign {
         global $USER;
 
         if (!$this->can_edit_submission($userid, $USER->id)) {
-            $user = core_user::get_user($userid);
-            $message = get_string('usersubmissioncannotberemoved', 'assign', fullname($user));
+            $message = get_string('usersubmissioncannotberemoved', 'assign', $userid);
             $this->set_error_message($message);
             return false;
         }
