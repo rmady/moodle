@@ -55,6 +55,8 @@ class external_api extends \core_external\external_api {
             'submissionnotopen' => 'This assignment is not open for submissions',
             'timelimitnotenabled' => 'Time limit is not enabled for assignment.',
             'opensubmissionexists' => 'Open assignment submission already exists.',
+            'usercantremovesubmission' => 'User do not have the capabilities to remove submission from this user assignment',
+            'userdonthavesubmission' => 'User do not have submission in this assignment',
         ];
 
         $message = $warningmessages[$warningcode];

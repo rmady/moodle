@@ -248,4 +248,12 @@ $functions = array(
             'capabilities'  => 'mod/assign:view',
             'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
         ],
+        'mod_assign_remove_submission' => [
+            'classname'     => 'mod_assign\external\remove_submission',
+            'methodname'    => 'execute',
+            'description'   => 'Remove a submission.',
+            'type'          => 'write',
+            'capabilities'  => 'mod/assign:submit, mod/assign:editothersubmission',
+            'services'      => [MOODLE_OFFICIAL_MOBILE_SERVICE]
+        ],
 );
