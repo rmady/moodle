@@ -4946,6 +4946,8 @@ function file_pluginfile($relativepath, $forcedownload, $preview = null, $offlin
 
             if ($CFG->forcelogin) {
                 require_login();
+            } else if ($course->id != SITEID) {
+                require_login();
             }
 
             if (!core_course_category::can_view_course_info($course)) {
