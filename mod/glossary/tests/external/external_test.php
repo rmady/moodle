@@ -206,11 +206,18 @@ class external_test extends externallib_advanced_testcase {
         $ctx = \context_module::instance($g1->cmid);
         $this->getDataGenerator()->enrol_user($u1->id, $c1->id);
 
-        $e1a = $gg->create_content($g1, array('approved' => 0, 'concept' => 'Bob', 'userid' => 2, 'tags' => array('Cats', 'Dogs')));
+        $aliases = ['alias1', 'alias2'];
+        $e1a = $gg->create_content($g1, ['approved' => 0, 'concept' => 'Bob', 'userid' => 2, 'tags' => ['Cats', 'Dogs']],
+            $aliases);
         $e1b = $gg->create_content($g1, array('approved' => 1, 'concept' => 'Jane', 'userid' => 2));
         $e1c = $gg->create_content($g1, array('approved' => 1, 'concept' => 'Alice', 'userid' => $u1->id));
         $e1d = $gg->create_content($g1, array('approved' => 0, 'concept' => '0-day', 'userid' => $u1->id));
         $e2a = $gg->create_content($g2);
+
+        // Create categories for entries.
+        $gg->create_category($g1, ['name' => 'Fish'], [$e1a, $e1b, $e1c]);
+        $gg->create_category($g1, ['name' => 'Cat'], [$e1d]);
+        $gg->create_category($g1, ['name' => 'Zebra'], [$e1b]);   // Entry $e1b is in two categories.
 
         $this->setAdminUser();
 
@@ -218,6 +225,10 @@ class external_test extends externallib_advanced_testcase {
         $return = mod_glossary_external::get_entries_by_letter($g1->id, 'ALL', 0, 20, array());
         $return = external_api::clean_returnvalue(mod_glossary_external::get_entries_by_letter_returns(), $return);
         $this->assertCount(3, $return['entries']);
+
+        $this->assertEquals(implode(', ', $aliases), $return['entries'][1]['aliases']);
+        $this->assertCount(1, $return['entries'][0]['categories']);
+        $this->assertCount(2, $return['entries'][2]['categories']);
         $this->assertEquals(3, $return['count']);
         $this->assertEquals($e1c->id, $return['entries'][0]['id']);
         $this->assertEquals($e1a->id, $return['entries'][1]['id']);

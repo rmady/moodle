@@ -90,7 +90,7 @@ class mod_glossary_external extends external_api {
      * @return external_definition
      */
     protected static function get_entry_return_structure($includecat = false) {
-        $params = array(
+        $params = [
             'id' => new external_value(PARAM_INT, 'The entry ID'),
             'glossaryid' => new external_value(PARAM_INT, 'The glossary ID'),
             'userid' => new external_value(PARAM_INT, 'Author ID'),
@@ -111,10 +111,19 @@ class mod_glossary_external extends external_api {
             'casesensitive' => new external_value(PARAM_BOOL, 'When true, the matching is case sensitive'),
             'fullmatch' => new external_value(PARAM_BOOL, 'When true, the matching is done on full words only'),
             'approved' => new external_value(PARAM_BOOL, 'Whether the entry was approved'),
+            'aliases' => new external_value(PARAM_TEXT, 'Entry aliases', VALUE_OPTIONAL),
+            'categories' => new external_multiple_structure(
+                new external_single_structure([
+                    'id' => new external_value(PARAM_INT, 'The category ID'),
+                    'glossaryid' => new external_value(PARAM_INT, 'The glossary ID'),
+                    'name' => new external_value(PARAM_RAW, 'The name of the category'),
+                    'usedynalink' => new external_value(PARAM_BOOL, 'Whether the category is automatically linked'),
+                ]), 'Entry categories', VALUE_OPTIONAL
+            ),
             'tags' => new external_multiple_structure(
                 \core_tag\external\tag_item_exporter::get_read_structure(), 'Tags', VALUE_OPTIONAL
             ),
-        );
+        ];
 
         if ($includecat) {
             $params['categoryid'] = new external_value(PARAM_INT, 'The category ID. This may be' .
@@ -137,7 +146,7 @@ class mod_glossary_external extends external_api {
      * @return void
      */
     protected static function fill_entry_details($entry, $context) {
-        global $PAGE;
+        global $PAGE, $DB;
         $canviewfullnames = has_capability('moodle/site:viewfullnames', $context);
 
         // Format concept and definition.
@@ -169,6 +178,29 @@ class mod_glossary_external extends external_api {
             $entry->definitioninlinefiles = $definitioninlinefiles;
         }
 
+        // Add aliases.
+        $aliases = $DB->get_records("glossary_alias", ['entryid' => $entry->id], '', 'alias');
+        if ($aliases) {
+            $entry->aliases = array_reduce($aliases, function($carry, $item) use ($aliases) {
+                return count($aliases) > 1 && !empty($carry) ? "$carry, $item->alias" : $item->alias;
+            }, '');
+        }
+        // Add categories.
+        $sql = "SELECT gc.id, gc.usedynalink, gc.name, gc.glossaryid
+            FROM {glossary_entries_categories} ec
+            INNER JOIN {glossary_categories} gc ON ec.categoryid = gc.id
+            WHERE ec.entryid = :entryid";
+        $categories = $DB->get_records_sql($sql, ['entryid' => $entry->id]);
+        if ($categories) {
+            foreach ($categories as $category) {
+                $entry->categories[] = [
+                    'id'          => $category->id,
+                    'glossaryid'  => $category->glossaryid,
+                    'name'        => $category->name,
+                    'usedynalink' => $category->usedynalink,
+                ];
+            }
+        }
         $entry->tags = \core_tag\external\util::get_item_tags('mod_glossary', 'glossary_entries', $entry->id);
     }
 
