@@ -86,7 +86,7 @@ class recentlyaccesseditems_item_exporter extends \core\external\exporter {
                 'type' => PARAM_INT,
             ),
             'modname' => array(
-                'type' => PARAM_TEXT,
+                'type' => PARAM_PLUGIN,
             ),
             'name' => array(
                     'type' => PARAM_TEXT,
